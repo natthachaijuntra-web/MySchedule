@@ -498,6 +498,9 @@ canvas { max-width: 100%; }
 
       <h2 class="section-title">ตารางวันนี้</h2>
       <div class="list-container" id="todayList"></div>
+
+      <h2 class="section-title" style="margin-top: 24px;">กำหนดการเร็วๆ นี้ <span style="font-size: 0.9rem; font-weight: 500; color: var(--text-muted);">(ภายใน 24 ชม.)</span></h2>
+      <div class="list-container" id="upcomingList"></div>
     </section>
 
     <!-- View: Schedule -->
@@ -1395,6 +1398,45 @@ function setupRepeatListeners() {
       document.getElementById(map[id]).style.display = (e.target.value !== 'none') ? 'block' : 'none';
     });
   });
+
+items.forEach(item => {
+    let status = '';
+    if (item.isAllDay) status = '<span class="item-status status-now" style="background:var(--primary); color:white;">ตลอดวัน</span>';
+    else {
+      const s = timeToMins(item.start || item.time);
+      const e = item.type==='class' ? timeToMins(item.end) : timeToMins(item.endTime || '23:59');
+      status = curMins > e ? '<span class="item-status status-past">ผ่านมาแล้ว</span>' : curMins >= s ? '<span class="item-status status-now">กำลังดำเนินอยู่</span>' : '<span class="item-status status-next">กำลังจะเริ่ม</span>';
+    }
+    list.innerHTML += createItemHTML(item, status);
+  });
+
+  // --- แทรกโค้ดส่วนนี้ทั้งหมด ก่อนวงเล็บปิดฟังก์ชัน renderDashboard ---
+  const upcomingList = document.getElementById('upcomingList');
+  if (upcomingList) {
+    const tomorrow = new Date(BASE_DATE);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const allItems = [...appData.classes, ...appData.activities];
+    const upcomingItems = allItems.filter(item => {
+      if (!isActivityOnDate(item, tomorrow)) return false;
+      if (item.isAllDay) return true; 
+      const s = timeToMins(item.start || item.time);
+      return s <= curMins;
+    }).sort((a,b) => {
+      if (a.isAllDay && !b.isAllDay) return -1; 
+      if (!a.isAllDay && b.isAllDay) return 1;
+      return timeToMins(a.start || a.time) - timeToMins(b.start || b.time);
+    });
+
+    upcomingList.innerHTML = upcomingItems.length === 0 
+      ? '<div style="text-align:center; color:var(--text-muted); padding:20px; background:var(--surface-solid); border-radius:var(--radius-md); border:1px dashed var(--border);">ไม่มีกำหนดการเพิ่มเติมใน 24 ชั่วโมงข้างหน้า</div>' 
+      : '';
+
+    upcomingItems.forEach(item => {
+      const status = '<span class="item-status status-next" style="background:rgba(6, 182, 212, 0.15); color:var(--accent);">พรุ่งนี้</span>';
+      upcomingList.innerHTML += createItemHTML(item, status);
+    });
+  }  
 }
 
 // ================= System Init =================
