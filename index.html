@@ -11,6 +11,10 @@
 <!-- PWA Manifest (Data URI) -->
 <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiTXkgU2NoZWR1bGUiLCJzaG9ydF9uYW1lIjoiU2NoZWR1bGUiLCJkZXNjcmlwdGlvbiI6IkFwcCBmb3IgbWFuYWdpbmcgY2xhc3NlcyBhbmQgYWN0aXZpdGllcyIsInN0YXJ0X3VybCI6Ii4vIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI0Y4RkFGQyIsInRoZW1lX2NvbG9yIjoiIzI1NjNFQiIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWwsPHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAyNCAyNCcgZmlsbD0nJTI1NjNFQic+PHJlY3QgeD0nMycgeT0nNCcgd2lkdGg9JzE4JyBoZWlnaHQ9JzE4JyByeD0nMicgcnk9JzInLz48L3N2Zz4iLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
 <!-- Google Fonts: Bai Jamjuree -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -376,6 +380,14 @@ canvas { max-width: 100%; }
   <symbol id="icon-repeat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></symbol>
 </svg>
 
+<div id="auth-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:999; display:flex; align-items:center; justify-content:center;">
+  <div class="card" style="width:90%; max-width:400px; text-align:center;">
+    <h2>ยินดีต้อนรับสู่ My Schedule</h2>
+    <p>ลงชื่อเข้าใช้เพื่อซิงค์ตารางเรียนของคุณข้ามอุปกรณ์</p>
+    <button onclick="signInWithGoogle()" class="btn btn-primary">เข้าสู่ระบบด้วย Google</button>
+  </div>
+</div>
+
 <div class="app-container">
   <!-- Bottom/Side Navigation -->
    
@@ -631,6 +643,7 @@ canvas { max-width: 100%; }
 <div id="toastContainer" class="toast-container"></div>
 
 <script>
+  
 /* ================= 1. STATE & DATA MANAGEMENT ================= */
 let BASE_DATE = new Date(); // Use real current date
 
@@ -647,12 +660,31 @@ let appData = {
 // Fallback for older data structures
 if(!appData.profile.avatarType) { appData.profile.avatarType = 'initial'; appData.profile.avatarValue = ''; }
 
-function saveData() {
-  localStorage.setItem('ms_profile', JSON.stringify(appData.profile));
-  localStorage.setItem('ms_classes', JSON.stringify(appData.classes));
-  localStorage.setItem('ms_activities', JSON.stringify(appData.activities));
-  renderAll();
+function saveToCloud(data) {
+  const user = firebase.auth().currentUser;
+  if (user) {
+    db.collection('users').doc(user.uid).set({
+      classes: appData.classes,
+      activities: appData.activities,
+      profile: appData.profile
+    }, { merge: true });
+  }
 }
+
+// โหลดข้อมูลเมื่อล็อกอินสำเร็จ
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    document.getElementById('auth-screen').style.display = 'none';
+    db.collection('users').doc(user.uid).get().then((doc) => {
+      if (doc.exists) {
+        appData = doc.data(); // ดึงข้อมูลที่ซิงค์ไว้มาจากเครื่องอื่น
+        renderAll();
+      }
+    });
+  } else {
+    document.getElementById('auth-screen').style.display = 'flex';
+  }
+});
 
 /* ================= 2. CORE LOGIC & TIME ================= */
 const daysTh = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
