@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light" data-font-size="medium" data-anim="on">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
+<title>ตารางเรียนของฉัน (My Schedule)</title>
+<meta name="description" content="แอปพลิเคชันจัดการตารางเรียนและกิจกรรมส่วนตัว ระดับพรีเมียม">
+<meta name="theme-color" content="#2563EB">
+<link rel="icon" href="NTCJT.tk.png">
+
+
+<!-- PWA Manifest (Data URI) -->
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiTXkgU2NoZWR1bGUiLCJzaG9ydF9uYW1lIjoiU2NoZWR1bGUiLCJkZXNjcmlwdGlvbiI6IkFwcCBmb3IgbWFuYWdpbmcgY2xhc3NlcyBhbmQgYWN0aXZpdGllcyIsInN0YXJ0X3VybCI6Ii4vIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI0Y4RkFGQyIsInRoZW1lX2NvbG9yIjoiIzI1NjNFQiIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWwsPHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAyNCAyNCcgZmlsbD0nJTI1NjNFQic+PHJlY3QgeD0nMycgeT0nNCcgd2lkdGg9JzE4JyBoZWlnaHQ9JzE4JyByeD0nMicgcnk9JzInLz48L3N2Zz4iLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
+
+<!-- Google Fonts: Bai Jamjuree -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ================= CSS VARIABLES & DESIGN TOKENS ================= */
+:root {
+  /* Colors */
+  --primary: #2563EB;
+  --secondary: #3B82F6;
+  --bg: #F8FAFC;
+  --surface: rgba(255, 255, 255, 0.75);
+  --surface-solid: #FFFFFF;
+  --accent: #06B6D4;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --text-main: #0F172A;
+  --text-muted: #64748B;
+  --border: rgba(15, 23, 42, 0.08);
+
+  /* Effects */
+  --glass-blur: 20px;
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 20px 25px -5px rgba(37, 99, 235, 0.15), 0 10px 10px -5px rgba(37, 99, 235, 0.04);
+
+  /* Sizing & Animation */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 32px;
+  --nav-height: 76px;
+  --t-fast: 0.2s ease;
+  --t-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Dark Mode Theme */
+[data-theme="dark"] {
+  --bg: #0F172A;
+  --surface: rgba(30, 41, 59, 0.75);
+  --surface-solid: #1E293B;
+  --text-main: #F8FAFC;
+  --text-muted: #94A3B8;
+  --border: rgba(255, 255, 255, 0.08);
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+}
+
+/* Accessibility & Settings */
+[data-font-size="small"] { font-size: 14px; }
+[data-font-size="medium"] { font-size: 16px; }
+[data-font-size="large"] { font-size: 18px; }
+[data-anim="off"] *, [data-anim="off"] *::before, [data-anim="off"] *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+
+/* ================= RESET & BASE ================= */
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: 'Bai Jamjuree', sans-serif;
+  background: var(--bg);
+  color: var(--text-main);
+  line-height: 1.5;
+  overflow-x: hidden;
+  transition: background var(--t-smooth), color var(--t-smooth);
+}
+button, input, select, textarea { font-family: inherit; color: inherit; border: none; outline: none; background: none; }
+button { cursor: pointer; }
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+
+/* Glassmorphism Class */
+.glass {
+  background: var(--surface);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--border);
+}
+
+/* ================= LOGIN / REGISTER SCREEN ================= */
+.login-screen {
+  position: fixed; inset: 0; z-index: 500;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(37,99,235,0.15), transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(6,182,212,0.15), transparent 40%),
+    var(--bg);
+}
+.login-card {
+  width: 100%; max-width: 420px; padding: 36px 28px; text-align: center;
+}
+.login-logo {
+  width: 64px; height: 64px; border-radius: 20px; margin: 0 auto 18px auto;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: flex; align-items: center; justify-content: center; color: white;
+  box-shadow: var(--shadow-md);
+}
+.login-card h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
+.login-card > p.subtitle { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; }
+.login-form-group { text-align: left; margin-bottom: 16px; }
+.login-error {
+  min-height: 20px; font-size: 0.85rem; font-weight: 600; color: var(--danger);
+  margin-bottom: 10px; text-align: left;
+}
+.login-divider { display: flex; align-items: center; gap: 12px; margin: 18px 0; color: var(--text-muted); font-size: 0.85rem; }
+.login-divider::before, .login-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.login-loading-overlay {
+  position: fixed; inset: 0; z-index: 600; display: flex; flex-direction: column; gap: 16px;
+  align-items: center; justify-content: center; background: var(--bg); color: var(--text-muted);
+}
+.spinner {
+  width: 40px; height: 40px; border-radius: 50%; border: 4px solid var(--border);
+  border-top-color: var(--primary); animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.sync-badge {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 600;
+  color: var(--text-muted); padding: 4px 0;
+}
+.sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
+.sync-dot.syncing { background: var(--warning); animation: pulse 1s infinite; }
+.sync-dot.error { background: var(--danger); }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* ================= LAYOUT ================= */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-bottom: calc(var(--nav-height) + 20px);
+}
+@media (min-width: 768px) {
+  .app-container { flex-direction: row; padding-bottom: 0; padding-left: 100px; }
+}
+main { flex: 1; padding: 20px; max-width: 1000px; margin: 0 auto; width: 100%; position: relative; }
+
+/* Navigation */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; width: 100%; height: var(--nav-height);
+  display: flex; justify-content: space-around; align-items: center; z-index: 100;
+  border-top-left-radius: var(--radius-md); border-top-right-radius: var(--radius-md);
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+}
+@media (min-width: 768px) {
+  .bottom-nav {
+    flex-direction: column; width: 90px; height: 100vh; top: 0; bottom: auto;
+    border-radius: 0; border-right: 1px solid var(--border); justify-content: center; gap: 40px;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.05);
+  }
+}
+.nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-muted);
+  transition: var(--t-fast); padding: 10px; width: 70px; border-radius: 16px;
+}
+.nav-item.active { color: var(--primary); background: rgba(37, 99, 235, 0.1); }
+.nav-item svg { width: 26px; height: 26px; transition: transform var(--t-fast); }
+.nav-item.active svg { transform: translateY(-2px) scale(1.1); }
+.nav-label { font-size: 0.75rem; font-weight: 600; }
+
+/* ================= UI COMPONENTS ================= */
+.card {
+  background: var(--surface-solid); border-radius: var(--radius-md);
+  padding: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
+}
+.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.floating-card { border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+
+.fab {
+  position: fixed; bottom: calc(var(--nav-height) + 20px); right: 20px;
+  width: 64px; height: 64px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white; display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-lg); z-index: 90; transition: transform var(--t-smooth);
+}
+.fab:active { transform: scale(0.9); }
+@media (min-width: 768px) { .fab { bottom: 40px; right: 40px; width: 70px; height: 70px; } }
+
+/* Header & Profile */
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.user-info { display: flex; align-items: center; gap: 16px; }
+.avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: flex; align-items: center; justify-content: center; color: white;
+  font-weight: 700; font-size: 1.4rem; object-fit: cover; box-shadow: var(--shadow-sm);
+  border: 2px solid var(--surface-solid);
+}
+.greeting h1 { font-size: 1.4rem; font-weight: 700; line-height: 1.2; letter-spacing: -0.5px; }
+.greeting p { font-size: 0.9rem; color: var(--text-muted); }
+
+/* Settings Avatar Picker */
+.avatar-preset-btn {
+  width: 50px; height: 50px; border-radius: 50%; font-size: 1.6rem;
+  background: var(--surface-solid); border: 2px solid transparent;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  box-shadow: var(--shadow-sm); transition: transform var(--t-fast);
+}
+.avatar-preset-btn:hover { transform: scale(1.1); }
+.avatar-preset-btn.active { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.2); }
+.avatar-preset-btn.upload-btn { background: var(--border); color: var(--text-main); }
+
+/* Dashboard Clock & Stats */
+.clock-card {
+  text-align: center; padding: 30px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white; border: none; margin-bottom: 20px;
+}
+.clock-time { font-size: 3rem; font-weight: 700; letter-spacing: 2px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.clock-date { font-size: 1.1rem; opacity: 0.9; margin-bottom: 8px; font-weight: 500; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+.stat-box { text-align: center; padding: 16px 8px; }
+.stat-num { font-size: 1.8rem; font-weight: 700; color: var(--primary); line-height: 1.2; }
+.stat-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-top: 4px; }
+
+/* Current Activity Card */
+.current-activity {
+  background: linear-gradient(135deg, var(--accent), var(--primary));
+  color: white; padding: 24px; position: relative; overflow: hidden; margin-bottom: 30px; border:none;
+}
+.current-activity::after {
+  content: ''; position: absolute; top: -50%; right: -10%; width: 200px; height: 200px;
+  background: rgba(255,255,255,0.15); border-radius: 50%; filter: blur(24px);
+}
+.ca-badge {
+  display: inline-block; padding: 6px 12px; background: rgba(255,255,255,0.25);
+  border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-bottom: 12px;
+}
+.ca-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.5px; }
+.ca-time { font-size: 1rem; opacity: 0.9; font-weight: 500; }
+.ca-remain { margin-top: 16px; font-size: 0.9rem; font-weight: 600; background: rgba(0,0,0,0.15); padding: 8px 16px; border-radius: 12px; display: inline-block; }
+
+/* Lists & Items */
+.section-title { font-size: 1.2rem; font-weight: 700; margin: 0 0 16px 0; display: flex; justify-content: space-between; align-items: center;}
+.list-container { display: flex; flex-direction: column; gap: 14px; }
+.list-item {
+  display: flex; gap: 16px; padding: 16px; position: relative; overflow: hidden;
+  align-items: center; cursor: grab; background: var(--surface-solid);
+}
+.list-item:active { cursor: grabbing; }
+.item-color-bar { width: 6px; border-radius: 10px; align-self: stretch; }
+.item-time-col { min-width: 65px; text-align: right; }
+.item-time-main { font-weight: 700; font-size: 1rem; }
+.item-time-sub { font-size: 0.8rem; color: var(--text-muted); }
+.item-content { flex: 1; min-width: 0; }
+.item-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px;}
+.item-meta { font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.item-status { font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 12px; }
+.status-past { background: var(--border); color: var(--text-muted); }
+.status-now { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+.status-next { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+.item-actions { display: flex; gap: 8px; opacity: 0; transition: var(--t-fast); }
+.list-item:hover .item-actions { opacity: 1; }
+@media (max-width: 768px) { .item-actions { opacity: 1; } }
+.icon-btn { padding: 10px; border-radius: 50%; color: var(--text-muted); background: var(--bg); transition: var(--t-fast); display: flex; align-items: center; justify-content: center; }
+.icon-btn:hover { background: var(--border); color: var(--primary); }
+
+/* Views & Animation */
+.view { display: none; animation: fadeSlideUp var(--t-smooth); }
+.view.active { display: block; }
+@keyframes fadeSlideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Schedule Tabs */
+.tabs { display: flex; gap: 8px; margin-bottom: 24px; background: var(--border); padding: 6px; border-radius: 16px; }
+.tab-btn { flex: 1; padding: 12px; text-align: center; font-weight: 600; font-size: 0.95rem; border-radius: 12px; color: var(--text-muted); transition: var(--t-fast); }
+.tab-btn.active { background: var(--surface-solid); color: var(--primary); box-shadow: var(--shadow-sm); }
+
+/* Timelines & Grids */
+.timeline-container { height: 65vh; overflow-y: auto; position: relative; padding: 20px 0; border-top: 1px solid var(--border); }
+.time-slot { height: 60px; border-bottom: 1px dashed var(--border); position: relative; }
+.time-label { position: absolute; top: -12px; left: 0; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); background: var(--bg); padding-right: 10px; }
+.timeline-event {
+  position: absolute; left: 65px; right: 10px; border-radius: 12px; padding: 10px 14px;
+  color: white; font-size: 0.9rem; font-weight: 600; box-shadow: var(--shadow-md);
+  display: flex; flex-direction: column; justify-content: center; overflow: hidden;
+}
+
+.weekly-grid { display: grid; grid-template-columns: 50px repeat(7, 1fr); gap: 1px; background: var(--border); overflow-x: auto; min-height: 60vh; border-radius: var(--radius-md);}
+.wg-header { background: var(--surface-solid); text-align: center; padding: 12px 4px; font-size: 0.85rem; font-weight: 700; }
+.wg-cell { background: var(--surface-solid); position: relative; min-height: 50px; }
+.wg-time { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-align: right; padding-right: 6px; }
+.wg-event { position: absolute; left: 2px; right: 2px; border-radius: 6px; font-size: 0.7rem; font-weight: 600; padding: 6px; color: white; overflow: hidden; line-height: 1.2;}
+
+/* Calendar */
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 10px; }
+.cal-day-header { text-align: center; font-weight: 700; font-size: 0.9rem; color: var(--text-muted); padding: 10px 0; }
+.cal-cell {
+  aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  padding: 6px; border-radius: 12px; cursor: pointer; transition: var(--t-fast); background: var(--surface-solid); border: 2px solid transparent;
+}
+.cal-cell:hover { border-color: var(--primary); }
+.cal-cell.today { background: var(--primary); color: white; }
+.cal-date { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+.cal-dots { display: flex; gap: 3px; flex-wrap: wrap; justify-content: center; max-width: 100%; overflow: hidden; height: 10px;}
+.cal-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+/* Forms & Inputs */
+.form-group { margin-bottom: 18px; }
+.form-label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
+.form-input {
+  width: 100%; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--border);
+  background: var(--bg); font-size: 1rem; transition: var(--t-fast); color: var(--text-main);
+  font-family: inherit; font-weight: 500;
+}
+.form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
+.form-input:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.color-picker { display: flex; gap: 12px; flex-wrap: wrap; }
+.color-circle { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: var(--t-fast); box-shadow: var(--shadow-sm);}
+.color-circle.active { transform: scale(1.15); border-color: var(--text-main); }
+
+.btn {
+  width: 100%; padding: 16px; border-radius: 16px; font-size: 1.05rem; font-weight: 700;
+  text-align: center; transition: var(--t-fast); cursor: pointer;
+}
+.btn-primary { background: var(--primary); color: white; box-shadow: var(--shadow-md); }
+.btn-primary:active { transform: scale(0.97); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.btn-outline { border: 2px solid var(--border); color: var(--text-main); background: transparent; margin-top: 10px; }
+.btn-outline:hover { background: var(--border); }
+
+/* Overlays & Bottom Sheets */
+.overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 200;
+  opacity: 0; pointer-events: none; transition: opacity var(--t-smooth);
+}
+.overlay.active { opacity: 1; pointer-events: auto; }
+
+.bottom-sheet {
+  position: fixed; bottom: 0; left: 0; width: 100%; background: var(--surface-solid);
+  border-top-left-radius: 28px; border-top-right-radius: 28px; padding: 24px;
+  z-index: 210; transform: translateY(100%); transition: transform var(--t-smooth);
+  max-height: 90vh; overflow-y: auto; pointer-events: none; opacity: 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+}
+@media (min-width: 768px) {
+  .bottom-sheet {
+    width: 540px; left: 50%; bottom: 50%; transform: translate(-50%, 100%);
+    border-radius: 28px; max-height: 85vh;
+  }
+}
+.bottom-sheet.active { transform: translateY(0); pointer-events: auto; opacity: 1; }
+@media (min-width: 768px) { .bottom-sheet.active { transform: translate(-50%, 50%); } }
+
+.sheet-handle { width: 48px; height: 5px; background: var(--border); border-radius: 5px; margin: 0 auto 24px auto; }
+.sheet-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 24px; text-align: center;}
+
+/* Toast */
+.toast-container {
+  position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; gap: 12px; z-index: 300; pointer-events: none;
+}
+.toast {
+  background: var(--text-main); color: var(--bg); padding: 14px 28px;
+  border-radius: 30px; font-size: 0.95rem; font-weight: 600; box-shadow: var(--shadow-lg);
+  animation: toastIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes toastIn { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Search & Filter */
+.search-bar { display: flex; gap: 12px; margin-bottom: 20px; }
+.search-input-wrap { position: relative; flex: 1; }
+.search-input-wrap svg { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); width: 22px; height: 22px; }
+.search-input { padding-left: 48px; }
+.filter-chips { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; }
+.filter-chips::-webkit-scrollbar { display: none; }
+.chip { padding: 8px 20px; border-radius: 24px; border: 1px solid var(--border); font-size: 0.9rem; font-weight: 600; white-space: nowrap; transition: var(--t-fast); }
+.chip.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: var(--shadow-sm); }
+
+/* Settings */
+.settings-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 20px;}
+.setting-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 24px; background: var(--surface-solid); transition: var(--t-fast); }
+.setting-item:active { background: var(--bg); }
+.setting-info h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: 2px;}
+.setting-info p { font-size: 0.85rem; color: var(--text-muted); }
+
+/* Toggle Switch */
+.switch { position: relative; display: inline-block; width: 52px; height: 28px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .4s; border-radius: 30px; }
+.slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+input:checked + .slider { background-color: var(--primary); }
+input:checked + .slider:before { transform: translateX(24px); }
+
+/* Charts & Footer */
+.chart-container { width: 100%; height: 260px; position: relative; margin-top: 20px; display: flex; justify-content: center; align-items: center; }
+canvas { max-width: 100%; }
+.footer { text-align: center; padding: 40px 0; color: var(--text-muted); font-size: 0.9rem; font-weight: 500;}
+.footer span { color: var(--danger); }
+</style>
+</head>
+<body>
+
+<!-- SVG Sprites for Icons -->
+<svg style="display: none;">
+  <symbol id="icon-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></symbol>
+  <symbol id="icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></symbol>
+  <symbol id="icon-pie" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></symbol>
+  <symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></symbol>
+  <symbol id="icon-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></symbol>
+  <symbol id="icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></symbol>
+  <symbol id="icon-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></symbol>
+  <symbol id="icon-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></symbol>
+  <symbol id="icon-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></symbol>
+  <symbol id="icon-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></symbol>
+  <symbol id="icon-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></symbol>
+  <symbol id="icon-repeat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></symbol>
+  <symbol id="icon-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></symbol>
+  <symbol id="icon-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></symbol>
+</svg>
+
+<!-- ================= LOGIN / REGISTER SCREEN ================= -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-card card floating-card glass">
+    <div class="login-logo"><svg width="30" height="30"><use href="#icon-lock"></use></svg></div>
+    <h1>My Schedule</h1>
+    <p class="subtitle">เข้าสู่ระบบเพื่อซิงค์ข้อมูลของคุณในทุกอุปกรณ์</p>
+
+    <div id="loginForm">
+      <div class="login-form-group"><label class="form-label">ชื่อผู้ใช้</label><input type="text" id="loginUsername" class="form-input" autocomplete="username" placeholder="เช่น somchai01"></div>
+      <div class="login-form-group"><label class="form-label">รหัสผ่าน</label><input type="password" id="loginPassword" class="form-input" autocomplete="current-password" placeholder="••••••••"></div>
+      <div class="login-error" id="loginError"></div>
+      <button class="btn btn-primary" id="loginBtn" onclick="handleLogin()">เข้าสู่ระบบ</button>
+      <div class="login-divider">หรือ</div>
+      <button class="btn btn-outline" onclick="showRegisterForm()">สมัครสมาชิกใหม่</button>
+    </div>
+
+    <div id="registerForm" style="display:none;">
+      <div class="login-form-group"><label class="form-label">ตั้งชื่อผู้ใช้</label><input type="text" id="regUsername" class="form-input" autocomplete="username" placeholder="อย่างน้อย 3 ตัวอักษร"></div>
+      <div class="login-form-group"><label class="form-label">ตั้งรหัสผ่าน</label><input type="password" id="regPassword" class="form-input" autocomplete="new-password" placeholder="••••••••"></div>
+      <div class="login-form-group"><label class="form-label">ยืนยันรหัสผ่าน</label><input type="password" id="regPassword2" class="form-input" autocomplete="new-password" placeholder="••••••••"></div>
+      <div class="login-error" id="registerError"></div>
+      <button class="btn btn-primary" id="registerBtn" style="background:var(--accent)" onclick="handleRegister()">สมัครสมาชิก</button>
+      <div class="login-divider">หรือ</div>
+      <button class="btn btn-outline" onclick="showLoginForm()">กลับไปเข้าสู่ระบบ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Shown briefly while auto-login / sync check runs -->
+<div id="loginLoadingOverlay" class="login-loading-overlay" style="display:none;">
+  <div class="spinner"></div>
+  <p>กำลังเชื่อมต่อข้อมูลของคุณ...</p>
+</div>
+
+<!-- ================= MAIN APP (hidden until logged in) ================= -->
+<div id="appRoot" style="display:none;">
+
+<div class="app-container">
+  <!-- Bottom/Side Navigation -->
+  <nav class="bottom-nav glass">
+    <button class="nav-item active" data-target="view-dashboard"><svg><use href="#icon-home"></use></svg><span class="nav-label">หน้าแรก</span></button>
+    <button class="nav-item" data-target="view-schedule"><svg><use href="#icon-calendar"></use></svg><span class="nav-label">ตารางเรียน</span></button>
+    <button class="nav-item" data-target="view-stats"><svg><use href="#icon-pie"></use></svg><span class="nav-label">สถิติ</span></button>
+    <button class="nav-item" data-target="view-settings"><svg><use href="#icon-settings"></use></svg><span class="nav-label">ตั้งค่า</span></button>
+  </nav>
+
+  <main>
+    <!-- View: Dashboard -->
+    <section id="view-dashboard" class="view active">
+      <header class="header">
+        <div class="user-info">
+          <img id="dashAvatarImg" src="" alt="Profile" class="avatar" style="display:none;">
+          <div id="dashAvatarInitials" class="avatar">ผ</div>
+          <div class="greeting"><h1>สวัสดี, <span id="dashName">ผู้เข้าใช้งาน</span></h1><p>พร้อมสำหรับวันนี้หรือยัง?</p></div>
+        </div>
+      </header>
+
+      <div class="card clock-card floating-card">
+        <div class="clock-date" id="clockDate">กำลังโหลด...</div>
+        <div class="clock-time" id="clockTime">--:--:--</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="card stat-box glass"><div class="stat-num" id="statTodayClass">0</div><div class="stat-label">คาบเรียน</div></div>
+        <div class="card stat-box glass"><div class="stat-num" id="statTodayAct" style="color:var(--accent)">0</div><div class="stat-label">กิจกรรม</div></div>
+        <div class="card stat-box glass"><div class="stat-num" id="statNextTime" style="color:var(--warning)">--</div><div class="stat-label">กิจกรรมถัดไป</div></div>
+      </div>
+
+      <div id="currentActivityContainer"></div>
+
+      <h2 class="section-title">ตารางวันนี้</h2>
+      <div class="list-container" id="todayList"></div>
+    </section>
+
+    <!-- View: Schedule -->
+    <section id="view-schedule" class="view">
+      <header class="header"><div class="greeting"><h1>ตารางทั้งหมด</h1></div></header>
+
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <svg><use href="#icon-search"></use></svg>
+          <input type="text" id="searchInput" class="form-input search-input" placeholder="ค้นหาวิชา, กิจกรรม, ผู้สอน...">
+        </div>
+      </div>
+
+      <div class="filter-chips">
+        <button class="chip active" data-filter="all">ทั้งหมด</button>
+        <button class="chip" data-filter="class">คาบเรียน</button>
+        <button class="chip" data-filter="activity">กิจกรรม</button>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="list">รายการ</button>
+        <button class="tab-btn" data-tab="daily">รายวัน</button>
+        <button class="tab-btn" data-tab="weekly">รายสัปดาห์</button>
+        <button class="tab-btn" data-tab="monthly">รายเดือน</button>
+      </div>
+
+      <div id="tab-list" class="tab-content active"><div class="list-container" id="fullList"></div></div>
+      <div id="tab-daily" class="tab-content" style="display:none;"><div class="timeline-container" id="dailyTimeline"></div></div>
+      <div id="tab-weekly" class="tab-content" style="display:none;"><div class="weekly-grid" id="weeklyGrid"></div></div>
+      <div id="tab-monthly" class="tab-content" style="display:none;">
+        <h3 id="calMonthDisplay" style="text-align:center; margin-bottom: 16px; font-weight:700;"></h3>
+        <div class="calendar-grid"><div class="cal-day-header">อา</div><div class="cal-day-header">จ</div><div class="cal-day-header">อ</div><div class="cal-day-header">พ</div><div class="cal-day-header">พฤ</div><div class="cal-day-header">ศ</div><div class="cal-day-header">ส</div></div>
+        <div class="calendar-grid" id="monthGrid"></div>
+        <h3 style="margin-top:24px; font-size:1.1rem; font-weight:700;">กิจกรรมในวัน <span id="selectedDateDisplay"></span></h3>
+        <div class="list-container" id="selectedDateList" style="margin-top: 12px;"></div>
+      </div>
+    </section>
+
+    <!-- View: Stats -->
+    <section id="view-stats" class="view">
+      <header class="header"><div class="greeting"><h1>สถิติภาพรวม</h1></div></header>
+      <div class="stats-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="card stat-box glass"><div class="stat-num" id="statTotalClass">0</div><div class="stat-label">วิชาทั้งหมด</div></div>
+        <div class="card stat-box glass"><div class="stat-num" id="statTotalAct">0</div><div class="stat-label">กิจกรรมทั้งหมด</div></div>
+      </div>
+      <div class="card glass" style="margin-bottom: 20px;">
+        <h3 style="font-size: 1.1rem; font-weight:700; margin-bottom: 10px; text-align:center;">เวลาเรียนแยกตามวิชา</h3>
+        <div class="chart-container"><canvas id="pieChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- View: Settings -->
+    <section id="view-settings" class="view">
+      <header class="header"><div class="greeting"><h1>การตั้งค่าบัญชี</h1></div></header>
+
+      <div class="card glass" style="margin-bottom: 24px; text-align: center;">
+        <h2 class="section-title" style="margin-top: 0; justify-content: center;">โปรไฟล์ของคุณ</h2>
+        <div style="display:flex; justify-content:center; margin-bottom: 12px;">
+          <img id="setAvatarImg" class="avatar" style="width: 88px; height: 88px; font-size: 3rem; display:none;">
+          <div id="setAvatarInitials" class="avatar" style="width: 88px; height: 88px; font-size: 3rem;">ณ</div>
+        </div>
+        <div class="sync-badge" style="justify-content:center; margin-bottom: 16px;">
+          <span class="sync-dot" id="syncDot"></span>
+          <span id="syncStatusText">เข้าสู่ระบบในชื่อ: <strong id="syncUsername">-</strong></span>
+        </div>
+        <div style="display:flex; gap:12px; justify-content:center; margin-bottom: 24px; flex-wrap: wrap;">
+          <button class="avatar-preset-btn" onclick="selectAvatar('initial', '')">Aa</button>
+          <button class="avatar-preset-btn" onclick="selectAvatar('emoji', '🦊')">🦊</button>
+          <button class="avatar-preset-btn" onclick="selectAvatar('emoji', '🐼')">🐼</button>
+          <button class="avatar-preset-btn" onclick="selectAvatar('emoji', '🐱')">🐱</button>
+          <button class="avatar-preset-btn upload-btn" onclick="document.getElementById('avatarUpload').click()"><svg width="24" height="24"><use href="#icon-camera"></use></svg></button>
+          <input type="file" id="avatarUpload" accept="image/*" style="display:none" onchange="handleAvatarUpload(event)">
+        </div>
+        <div class="form-group" style="text-align: left;">
+          <label class="form-label">ชื่อผู้ใช้ (Display Name)</label>
+          <input type="text" id="setProfileName" class="form-input">
+        </div>
+        <button class="btn btn-primary" onclick="saveProfile()">บันทึกโปรไฟล์</button>
+      </div>
+
+      <div class="settings-list">
+        <div class="setting-item">
+          <div class="setting-info"><h4>โหมดมืด (Dark Mode)</h4><p>ปรับธีมสีให้สบายตาในที่มืด</p></div>
+          <label class="switch"><input type="checkbox" id="setDarkMode"><span class="slider"></span></label>
+        </div>
+        <div class="setting-item">
+          <div class="setting-info"><h4>แอนิเมชัน (Animation)</h4><p>เปิด/ปิด เอฟเฟกต์การเคลื่อนไหว</p></div>
+          <label class="switch"><input type="checkbox" id="setAnim" checked><span class="slider"></span></label>
+        </div>
+      </div>
+      <div class="settings-list" style="margin-top: 24px;">
+        <div class="setting-item" style="cursor:pointer;" onclick="manualSync()"><div class="setting-info"><h4>ซิงค์ข้อมูลตอนนี้ (Sync Now)</h4><p>บังคับอัปโหลด/ดาวน์โหลดข้อมูลล่าสุด</p></div></div>
+        <div class="setting-item" style="cursor:pointer;" onclick="exportData()"><div class="setting-info"><h4>ส่งออกข้อมูล (Export)</h4><p>บันทึกข้อมูลเป็นไฟล์ JSON สำรอง</p></div></div>
+        <div class="setting-item" style="cursor:pointer;" onclick="document.getElementById('importFile').click()"><div class="setting-info"><h4>นำเข้าข้อมูล (Import)</h4><p>กู้คืนข้อมูลจากไฟล์ JSON</p><input type="file" id="importFile" style="display:none" accept=".json" onchange="importData(event)"></div></div>
+        <div class="setting-item" style="cursor:pointer;" onclick="handleLogout()"><div class="setting-info"><h4 style="color:var(--danger);">ออกจากระบบ (Logout)</h4><p>ออกจากบัญชีนี้บนอุปกรณ์นี้</p></div><svg width="20" height="20" style="color:var(--danger);"><use href="#icon-logout"></use></svg></div>
+      </div>
+
+      <div class="footer"><p><strong>My Schedule</strong></p><p>Version 1.1.0 (Cloud Sync)</p><p>© 2026 ntcjt.tk<span></span></p></div>
+    </section>
+  </main>
+</div>
+
+<!-- Floating Action Button -->
+<button class="fab" id="mainFab" onclick="openSheet('addChoiceSheet')"><svg width="32" height="32"><use href="#icon-plus"></use></svg></button>
+
+<!-- Overlays & Bottom Sheets -->
+<div class="overlay" id="mainOverlay" onclick="closeAllSheets()"></div>
+
+<div class="bottom-sheet" id="addChoiceSheet">
+  <div class="sheet-handle"></div><h2 class="sheet-title">เพิ่มรายการใหม่</h2>
+  <div style="display:flex; gap:12px;">
+    <button class="card glass" style="flex:1; text-align:center; padding:30px 20px;" onclick="openSheet('classFormSheet')">
+      <svg width="40" height="40" style="color:var(--primary); margin-bottom:12px;"><use href="#icon-calendar"></use></svg><h4 style="font-size:1.1rem;">คาบเรียน</h4>
+    </button>
+    <button class="card glass" style="flex:1; text-align:center; padding:30px 20px;" onclick="openSheet('actFormSheet')">
+      <svg width="40" height="40" style="color:var(--accent); margin-bottom:12px;"><use href="#icon-map"></use></svg><h4 style="font-size:1.1rem;">กิจกรรม</h4>
+    </button>
+  </div>
+</div>
+
+<!-- Form: Class -->
+<div class="bottom-sheet" id="classFormSheet">
+  <div class="sheet-handle"></div><h2 class="sheet-title" id="classFormTitle">เพิ่มคาบเรียน</h2>
+  <input type="hidden" id="c_id">
+  <div class="form-group"><label class="form-label">ชื่อวิชา*</label><input type="text" id="c_title" class="form-input" required></div>
+  <div class="form-group"><label class="form-label">อาจารย์ผู้สอน</label><input type="text" id="c_teacher" class="form-input"></div>
+  <div class="form-group"><label class="form-label">ห้องเรียน</label><input type="text" id="c_room" class="form-input"></div>
+
+  <div class="form-group" style="display:flex; justify-content:space-between; align-items:center; background:var(--surface-solid); padding:12px 16px; border-radius:14px; border:1px solid var(--border);">
+    <label class="form-label" style="margin:0; font-size:1rem;">ตลอดทั้งวัน (All-day)</label>
+    <label class="switch"><input type="checkbox" id="c_allday" onchange="toggleAllDayClass()"><span class="slider"></span></label>
+  </div>
+
+  <div style="display:flex; gap:12px;">
+    <div class="form-group" style="flex:1;"><label class="form-label">เริ่มวันที่*</label><input type="date" id="c_date" class="form-input" required></div>
+    <div class="form-group" style="flex:1; transition:0.3s;" id="c_time_wrap"><label class="form-label">เวลาเริ่ม*</label><input type="time" id="c_start" class="form-input" required></div>
+  </div>
+
+  <div style="display:flex; gap:12px;">
+    <div class="form-group" style="flex:1;"><label class="form-label">ถึงวันที่*</label><input type="date" id="c_end_date" class="form-input" required></div>
+    <div class="form-group" style="flex:1; transition:0.3s;" id="c_endtime_wrap"><label class="form-label">เวลาสิ้นสุด*</label><input type="time" id="c_end" class="form-input" required></div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">การเกิดซ้ำ (Recurrence)</label>
+    <div style="position:relative;">
+      <select id="c_recurrence" class="form-input" style="padding-left:44px; appearance:none;">
+        <option value="none">ไม่เกิดซ้ำ</option><option value="daily">ทุกวัน</option><option value="weekly">ทุกสัปดาห์</option>
+        <option value="monthly">ทุกเดือน (วันเดียวกัน)</option><option value="yearly">ทุกปี (วันและเดือนเดียวกัน)</option>
+        <option value="weekday">ทุกวันธรรมดา (จันทร์-ศุกร์)</option>
+      </select>
+      <svg style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:var(--text-muted);" width="20" height="20"><use href="#icon-repeat"></use></svg>
+    </div>
+  </div>
+
+  <div class="form-group" id="repeat_until_wrap" style="display:none;">
+  <label class="form-label">สิ้นสุดการเกิดซ้ำในวันที่</label>
+  <input type="date" id="c_repeat_until" class="form-input"> </div>
+
+  <div class="form-group"><label class="form-label">สีประจำวิชา</label>
+    <div class="color-picker" id="c_color_picker">
+      <div class="color-circle active" style="background:#2563EB" data-color="#2563EB"></div><div class="color-circle" style="background:#8B5CF6" data-color="#8B5CF6"></div><div class="color-circle" style="background:#10B981" data-color="#10B981"></div>
+      <div class="color-circle" style="background:#F59E0B" data-color="#F59E0B"></div><div class="color-circle" style="background:#EF4444" data-color="#EF4444"></div><div class="color-circle" style="background:#06B6D4" data-color="#06B6D4"></div>
+    </div>
+  </div>
+  <button class="btn btn-primary" onclick="saveClass()">บันทึกข้อมูล</button>
+</div>
+
+<!-- Form: Activity -->
+<div class="bottom-sheet" id="actFormSheet">
+  <div class="sheet-handle"></div><h2 class="sheet-title" id="actFormTitle">เพิ่มกิจกรรม</h2>
+  <input type="hidden" id="a_id">
+  <div class="form-group"><label class="form-label">ชื่อกิจกรรม*</label><input type="text" id="a_title" class="form-input" required></div>
+
+  <div class="form-group" style="display:flex; justify-content:space-between; align-items:center; background:var(--surface-solid); padding:12px 16px; border-radius:14px; border:1px solid var(--border);">
+    <label class="form-label" style="margin:0; font-size:1rem;">ตลอดทั้งวัน (All-day)</label>
+    <label class="switch"><input type="checkbox" id="a_allday" onchange="toggleAllDay()"><span class="slider"></span></label>
+  </div>
+
+  <div style="display:flex; gap:12px;">
+    <div class="form-group" style="flex:1;"><label class="form-label">เริ่มวันที่*</label><input type="date" id="a_date" class="form-input" required></div>
+    <div class="form-group" style="flex:1; transition:0.3s;" id="a_time_wrap"><label class="form-label">เวลาเริ่ม*</label><input type="time" id="a_time" class="form-input" required></div>
+  </div>
+
+  <div style="display:flex; gap:12px;">
+    <div class="form-group" style="flex:1;"><label class="form-label">ถึงวันที่*</label><input type="date" id="a_end_date" class="form-input" required></div>
+    <div class="form-group" style="flex:1; transition:0.3s;" id="a_endtime_wrap"><label class="form-label">เวลาสิ้นสุด*</label><input type="time" id="a_end_time" class="form-input" required></div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">การเกิดซ้ำ (Recurrence)</label>
+    <div style="position:relative;">
+      <select id="a_recurrence" class="form-input" style="padding-left:44px; appearance:none;">
+        <option value="none">ไม่เกิดซ้ำ</option><option value="daily">ทุกวัน</option><option value="weekly">ทุกสัปดาห์</option>
+        <option value="monthly">ทุกเดือน (วันเดียวกัน)</option><option value="yearly">ทุกปี (วันและเดือนเดียวกัน)</option>
+        <option value="weekday">ทุกวันธรรมดา (จันทร์-ศุกร์)</option>
+      </select>
+      <svg style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:var(--text-muted);" width="20" height="20"><use href="#icon-repeat"></use></svg>
+    </div>
+  </div>
+
+  <div class="form-group" id="repeat_until_wrap2" style="display:none;">
+  <label class="form-label">สิ้นสุดการเกิดซ้ำในวันที่</label>
+  <input type="date" id="a_repeat_until" class="form-input"> </div>
+
+  <div class="form-group"><label class="form-label">สถานที่</label><input type="text" id="a_loc" class="form-input"></div>
+  <div class="form-group"><label class="form-label">แจ้งเตือนก่อนเริ่ม (นาที)</label>
+    <select id="a_notify" class="form-input"><option value="0">ไม่แจ้งเตือน</option><option value="5">5 นาที</option><option value="10">10 นาที</option><option value="30">30 นาที</option><option value="60">1 ชั่วโมง</option></select>
+  </div>
+  <button class="btn btn-primary" onclick="saveActivity()" style="background:var(--accent)">บันทึกข้อมูล</button>
+</div>
+
+<!-- Confirm Delete -->
+<div class="bottom-sheet" id="confirmSheet">
+  <div class="sheet-handle"></div><h2 class="sheet-title" style="color:var(--danger)">ยืนยันการลบ</h2>
+  <p style="margin-bottom: 24px; color: var(--text-muted); text-align:center; font-size:1.05rem;">คุณต้องการลบรายการนี้ใช่หรือไม่?<br>ข้อมูลที่ลบจะไม่สามารถกู้คืนได้</p>
+  <div style="display:flex; gap:12px;">
+    <button class="btn btn-outline" style="flex:1; margin-top:0;" onclick="closeAllSheets()">ยกเลิก</button>
+    <button class="btn btn-primary" style="flex:1; background:var(--danger);" id="confirmDeleteBtn">ลบข้อมูล</button>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+
+</div> <!-- /#appRoot -->
+
+<script>
+/* ===================================================================
+   CLOUD SYNC CONFIG
+   -------------------------------------------------------------------
+   Replace this URL with the Web App URL you get after deploying the
+   Apps Script (see AppsScript-Code.gs instructions). Until you do,
+   login/register will not work.
+=================================================================== */
+const API_URL = "https://docs.google.com/spreadsheets/d/1nycQ2Caj3o2jD-Q1bpB7_We4ZaYh8zF6n99wjo1dCJE/edit?usp=sharing";
+
+/* ================= 1. STATE & DATA MANAGEMENT ================= */
+let BASE_DATE = new Date(); // Use real current date
+
+const defaultProfile = { name: "ผู้เข้าใช้งาน", nickname: "ผ", theme: "system", anim: true, avatarType: "initial", avatarValue: "" };
+const defaultClasses = [];
+const defaultActivities = [];
+
+let appData = { profile: { ...defaultProfile }, classes: [...defaultClasses], activities: [...defaultActivities] };
+let currentUser = null; // { username, password } while logged in
+let saveTimeout = null;
+
+function saveData() {
+  // Local cache so the UI is instant and works offline between syncs
+  if (currentUser) {
+    try { localStorage.setItem('ms_cache_' + currentUser.username, JSON.stringify(appData)); } catch (e) {}
+  }
+  renderAll();
+  queueSync();
+}
+
+function queueSync() {
+  if (!currentUser) return;
+  setSyncDot('syncing');
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(syncToServer, 700);
+}
+
+async function syncToServer() {
+  if (!currentUser) return;
+  try {
+    const res = await apiPost({ action: 'save', username: currentUser.username, password: currentUser.password, data: JSON.stringify(appData) });
+    setSyncDot(res && res.success ? 'ok' : 'error');
+    if (!res || !res.success) showToast(res && res.message ? res.message : "ซิงค์ข้อมูลไม่สำเร็จ");
+  } catch (err) {
+    setSyncDot('error');
+    showToast("ไม่สามารถเชื่อมต่ออินเทอร์เน็ตเพื่อซิงค์ข้อมูลได้");
+  }
+}
+
+function setSyncDot(state) {
+  const dot = document.getElementById('syncDot');
+  if (!dot) return;
+  dot.classList.remove('syncing', 'error');
+  if (state === 'syncing') dot.classList.add('syncing');
+  if (state === 'error') dot.classList.add('error');
+}
+
+/* ================= 2. CLOUD API HELPERS ================= */
+async function apiGet(params) {
+  const qs = new URLSearchParams(params).toString();
+  const res = await fetch(`${API_URL}?${qs}`);
+  return res.json();
+}
+async function apiPost(payload) {
+  const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+  return res.json();
+}
+
+/* ================= 3. LOGIN / REGISTER / LOGOUT ================= */
+function showRegisterForm() { document.getElementById('loginForm').style.display = 'none'; document.getElementById('registerForm').style.display = 'block'; document.getElementById('loginError').innerText=''; document.getElementById('registerError').innerText=''; }
+function showLoginForm() { document.getElementById('registerForm').style.display = 'none'; document.getElementById('loginForm').style.display = 'block'; document.getElementById('loginError').innerText=''; document.getElementById('registerError').innerText=''; }
+
+function checkApiConfigured() {
+  if (!API_URL || API_URL.indexOf("PASTE_YOUR") === 0) {
+    document.getElementById('loginError').innerText = "ยังไม่ได้ตั้งค่า API_URL ในโค้ด กรุณาใส่ Web App URL ของ Apps Script ก่อนใช้งาน";
+    return false;
+  }
+  return true;
+}
+
+async function handleLogin() {
+  if (!checkApiConfigured()) return;
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  errEl.innerText = '';
+  if (!username || !password) { errEl.innerText = "กรุณากรอกข้อมูลให้ครบ"; return; }
+
+  const btn = document.getElementById('loginBtn'); btn.disabled = true; btn.innerText = "กำลังเข้าสู่ระบบ...";
+  try {
+    const res = await apiGet({ action: 'login', username, password });
+    if (res.success) {
+      applyLoggedInSession(username, password, res.data);
+    } else {
+      errEl.innerText = res.message || "เข้าสู่ระบบไม่สำเร็จ";
+    }
+  } catch (err) {
+    errEl.innerText = "เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ตรวจสอบอินเทอร์เน็ตหรือ API_URL";
+  } finally {
+    btn.disabled = false; btn.innerText = "เข้าสู่ระบบ";
+  }
+}
+
+async function handleRegister() {
+  if (!checkApiConfigured()) return;
+  const username = document.getElementById('regUsername').value.trim();
+  const password = document.getElementById('regPassword').value;
+  const password2 = document.getElementById('regPassword2').value;
+  const errEl = document.getElementById('registerError');
+  errEl.innerText = '';
+  if (!username || !password) { errEl.innerText = "กรุณากรอกข้อมูลให้ครบ"; return; }
+  if (password !== password2) { errEl.innerText = "รหัสผ่านไม่ตรงกัน"; return; }
+
+  const btn = document.getElementById('registerBtn'); btn.disabled = true; btn.innerText = "กำลังสมัครสมาชิก...";
+  try {
+    const res = await apiGet({ action: 'register', username, password });
+    if (res.success) {
+      showToast("สมัครสมาชิกสำเร็จ กำลังเข้าสู่ระบบ...");
+      applyLoggedInSession(username, password, res.data);
+    } else {
+      errEl.innerText = res.message || "สมัครสมาชิกไม่สำเร็จ";
+    }
+  } catch (err) {
+    errEl.innerText = "เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ตรวจสอบอินเทอร์เน็ตหรือ API_URL";
+  } finally {
+    btn.disabled = false; btn.innerText = "สมัครสมาชิก";
+  }
+}
+
+function applyLoggedInSession(username, password, data) {
+  currentUser = { username, password };
+  appData = data && data.profile ? data : { profile: { ...defaultProfile, name: username }, classes: [], activities: [] };
+  if (!appData.profile.avatarType) { appData.profile.avatarType = 'initial'; appData.profile.avatarValue = ''; }
+  try {
+    localStorage.setItem('ms_session', JSON.stringify(currentUser));
+    localStorage.setItem('ms_cache_' + username, JSON.stringify(appData));
+  } catch (e) {}
+  enterApp();
+}
+
+function enterApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('loginLoadingOverlay').style.display = 'none';
+  document.getElementById('appRoot').style.display = '';
+  document.getElementById('syncUsername').innerText = currentUser.username;
+  setSyncDot('ok');
+  updateClock(); renderAll(); clearForms();
+}
+
+function handleLogout() {
+  try { localStorage.removeItem('ms_session'); } catch (e) {}
+  currentUser = null;
+  appData = { profile: { ...defaultProfile }, classes: [], activities: [] };
+  document.getElementById('appRoot').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginUsername').value = '';
+  document.getElementById('loginPassword').value = '';
+  showLoginForm();
+}
+
+async function manualSync() {
+  if (!currentUser) return;
+  showToast("กำลังซิงค์ข้อมูล...");
+  try {
+    const res = await apiGet({ action: 'login', username: currentUser.username, password: currentUser.password });
+    if (res.success) {
+      appData = res.data;
+      if (!appData.profile.avatarType) { appData.profile.avatarType = 'initial'; appData.profile.avatarValue = ''; }
+      try { localStorage.setItem('ms_cache_' + currentUser.username, JSON.stringify(appData)); } catch (e) {}
+      renderAll(); initSettings();
+      setSyncDot('ok');
+      showToast("ซิงค์ข้อมูลล่าสุดสำเร็จ");
+    } else {
+      showToast(res.message || "ซิงค์ไม่สำเร็จ");
+    }
+  } catch (err) {
+    setSyncDot('error');
+    showToast("ไม่สามารถเชื่อมต่ออินเทอร์เน็ตได้");
+  }
+}
+
+// Try auto-login from a saved session (so returning users skip the login form)
+async function attemptAutoLogin() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem('ms_session') || 'null'); } catch (e) {}
+  if (!saved || !saved.username || !saved.password || !checkApiConfigured()) {
+    updateClock(); // keep the clock ticking behind the login screen too
+    return;
+  }
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('loginLoadingOverlay').style.display = 'flex';
+  try {
+    const res = await apiGet({ action: 'login', username: saved.username, password: saved.password });
+    if (res.success) {
+      applyLoggedInSession(saved.username, saved.password, res.data);
+      return;
+    }
+  } catch (err) {
+    // offline: fall back to local cache under that username so the app still works
+    try {
+      const cached = JSON.parse(localStorage.getItem('ms_cache_' + saved.username) || 'null');
+      if (cached) {
+        currentUser = saved; appData = cached; enterApp();
+        showToast("ออฟไลน์: กำลังใช้ข้อมูลที่บันทึกไว้ในเครื่อง");
+        return;
+      }
+    } catch (e2) {}
+  }
+  // fallback: show login screen again
+  document.getElementById('loginLoadingOverlay').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
+/* ================= 4. CORE LOGIC & TIME ================= */
+const daysTh = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
+const monthsTh = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+
+// Tick every second
+setInterval(() => { BASE_DATE = new Date(); if (currentUser) { updateClock(); checkNotifications(); } }, 1000);
+
+function updateClock() {
+  const d = BASE_DATE;
+  document.getElementById('clockDate').innerText = `วัน${daysTh[d.getDay()]}ที่ ${d.getDate()} ${monthsTh[d.getMonth()]} ${d.getFullYear() + 543}`;
+  document.getElementById('clockTime').innerText = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  updateCurrentActivity();
+}
+
+function pad(n) { return n < 10 ? '0'+n : n; }
+function timeToMins(time) { if(!time) return 0; const [h,m] = time.split(':'); return parseInt(h)*60 + parseInt(m); }
+function getTodayStr() { return `${BASE_DATE.getFullYear()}-${pad(BASE_DATE.getMonth()+1)}-${pad(BASE_DATE.getDate())}`; }
+
+/* ================= 5. DATE MATH & RECURRENCE ================= */
+function isActivityOnDate(a, targetDateObj) {
+  const tDate = new Date(targetDateObj.getFullYear(), targetDateObj.getMonth(), targetDateObj.getDate());
+  const sDate = new Date(a.date); sDate.setHours(0,0,0,0);
+  const eDate = new Date(a.endDate || a.date); eDate.setHours(0,0,0,0);
+  const untilDate = a.repeatUntil ? new Date(a.repeatUntil) : new Date(2100, 0, 1);
+
+  if (tDate < sDate || tDate > untilDate) return false;
+
+  const durationDays = Math.round((eDate.getTime() - sDate.getTime()) / 86400000);
+  const checkMatch = (baseStart) => {
+    const diffDays = Math.round((tDate.getTime() - baseStart.getTime()) / 86400000);
+    return diffDays >= 0 && diffDays <= durationDays;
+  };
+
+  const rec = a.recurrence || 'none';
+  if (rec === 'none') return checkMatch(sDate);
+  if (rec === 'daily') return true;
+  if (rec === 'weekly') {
+    const weeks = Math.floor(Math.round((tDate.getTime() - sDate.getTime()) / 86400000) / 7);
+    const baseForThisWeek = new Date(sDate.getTime() + weeks * 7 * 86400000);
+    return checkMatch(baseForThisWeek);
+  }
+  if (rec === 'monthly') {
+    let tempBase = new Date(tDate.getFullYear(), tDate.getMonth(), sDate.getDate());
+    if (tempBase > tDate && tDate.getMonth() !== sDate.getMonth()) tempBase = new Date(tDate.getFullYear(), tDate.getMonth() - 1, sDate.getDate());
+    return checkMatch(tempBase);
+  }
+  if (rec === 'yearly') {
+    let tempBase = new Date(tDate.getFullYear(), sDate.getMonth(), sDate.getDate());
+    if (tempBase > tDate) tempBase = new Date(tDate.getFullYear() - 1, sDate.getMonth(), sDate.getDate());
+    return checkMatch(tempBase);
+  }
+  if (rec === 'weekday') {
+    if (tDate.getDay() === 0 || tDate.getDay() === 6) return false;
+    return true;
+  }
+  return false;
+}
+
+/* ================= 6. UI CONTROLS ================= */
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    const target = e.currentTarget; target.classList.add('active');
+    document.getElementById(target.dataset.target).classList.add('active');
+    if(target.dataset.target === 'view-stats') drawPieChart();
+  });
+});
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    document.querySelectorAll('.tab-btn').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+    e.target.classList.add('active'); document.getElementById(`tab-${e.target.dataset.tab}`).style.display = 'block';
+  });
+});
+
+function openSheet(id) { closeAllSheets(); document.getElementById('mainOverlay').classList.add('active'); document.getElementById(id).classList.add('active'); }
+function closeAllSheets() { document.getElementById('mainOverlay').classList.remove('active'); document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('active')); }
+function showToast(msg) { const container = document.getElementById('toastContainer'); const toast = document.createElement('div'); toast.className = 'toast'; toast.innerText = msg; container.appendChild(toast); setTimeout(() => { toast.remove(); }, 3000); }
+
+let selectedClassColor = "#2563EB";
+document.querySelectorAll('#c_color_picker .color-circle').forEach(c => {
+  c.addEventListener('click', (e) => {
+    document.querySelectorAll('#c_color_picker .color-circle').forEach(n => n.classList.remove('active'));
+    e.target.classList.add('active'); selectedClassColor = e.target.dataset.color;
+  });
+});
+
+/* ================= 7. AVATAR SYSTEM ================= */
+function selectAvatar(type, value) { appData.profile.avatarType = type; appData.profile.avatarValue = value; updateAvatarUI(); saveData(); showToast("เปลี่ยนรูปโปรไฟล์เรียบร้อย"); }
+function handleAvatarUpload(event) {
+  const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas'); const MAX_SIZE = 250; let w = img.width, h = img.height;
+      if (w > h) { if (w > MAX_SIZE) { h *= MAX_SIZE / w; w = MAX_SIZE; } } else { if (h > MAX_SIZE) { w *= MAX_SIZE / h; h = MAX_SIZE; } }
+      canvas.width = w; canvas.height = h; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, w, h);
+      appData.profile.avatarType = 'custom'; appData.profile.avatarValue = canvas.toDataURL('image/jpeg', 0.8);
+      updateAvatarUI(); saveData(); showToast("อัปโหลดรูปสำเร็จ");
+    }; img.src = e.target.result;
+  }; reader.readAsDataURL(file);
+}
+function updateAvatarUI() {
+  const { avatarType, avatarValue, name } = appData.profile;
+  const dashImg = document.getElementById('dashAvatarImg'), dashInit = document.getElementById('dashAvatarInitials'), setImg = document.getElementById('setAvatarImg'), setInit = document.getElementById('setAvatarInitials');
+  if (avatarType === 'custom') { dashImg.src = avatarValue; dashImg.style.display = 'flex'; dashInit.style.display = 'none'; setImg.src = avatarValue; setImg.style.display = 'flex'; setInit.style.display = 'none'; }
+  else if (avatarType === 'emoji') { dashImg.style.display = 'none'; dashInit.style.display = 'flex'; dashInit.innerText = avatarValue; setImg.style.display = 'none'; setInit.style.display = 'flex'; setInit.innerText = avatarValue; }
+  else { const initial = name ? name.charAt(0) : 'ผู้'; dashImg.style.display = 'none'; dashInit.style.display = 'flex'; dashInit.innerText = initial; setImg.style.display = 'none'; setInit.style.display = 'flex'; setInit.innerText = initial; }
+}
+
+/* ================= 8. MAIN RENDERING ================= */
+function renderAll() { initSettings(); renderDashboard(); renderList(); renderDailyTimeline(); renderWeeklyGrid(); renderCalendar(); renderStats(); }
+
+function getTodayItems() {
+  const allItems = [...appData.classes, ...appData.activities];
+  return allItems.filter(item => isActivityOnDate(item, BASE_DATE)).sort((a,b) => {
+    if (a.isAllDay && !b.isAllDay) return -1; if (!a.isAllDay && b.isAllDay) return 1;
+    return timeToMins(a.start || a.time) - timeToMins(b.start || b.time);
+  });
+}
+
+function updateCurrentActivity() {
+  const items = getTodayItems();
+  const curMins = BASE_DATE.getHours()*60 + BASE_DATE.getMinutes();
+  const container = document.getElementById('currentActivityContainer');
+  let current = null, next = null;
+
+  for(let item of items) {
+    if(item.isAllDay) continue; // Skip all day events for active counter
+    const s = timeToMins(item.start || item.time);
+    const e = item.type === 'class' ? timeToMins(item.end) : timeToMins(item.endTime || '23:59');
+    if(curMins >= s && curMins <= e) current = item;
+    else if(curMins < s && !next) next = item;
+  }
+
+  if(current) {
+    const e = current.type === 'class' ? timeToMins(current.end) : timeToMins(current.endTime || '23:59');
+    const remain = e - curMins;
+    container.innerHTML = `<div class="card current-activity floating-card"><span class="ca-badge">กำลัง${current.type==='class'?'เรียน':'ทำกิจกรรม'}</span><div class="ca-title">${current.title}</div><div class="ca-time">${current.start || current.time} - ${current.end || current.endTime || '...'}</div><div class="ca-remain">เหลืออีก ${remain} นาที</div></div>`;
+    document.getElementById('statNextTime').innerText = "กำลังดำเนินอยู่";
+  } else if (next) {
+    const diff = timeToMins(next.start || next.time) - curMins, hr = Math.floor(diff/60), mn = diff%60;
+    container.innerHTML = `<div class="card current-activity floating-card" style="background:var(--surface-solid); color:var(--text-main); border:1px solid var(--border);"><span class="ca-badge" style="background:rgba(0,0,0,0.05); color:var(--text-muted);">ไม่มีตารางในช่วงเวลานี้</span><div class="ca-title" style="font-size:1.2rem; color:var(--text-main);">${next.title}</div><div class="ca-remain" style="color:var(--warning); background:rgba(245, 158, 11, 0.1);">กิจกรรมถัดไปอีก ${hr>0?hr+' ชม. ':''}${mn} นาที</div></div>`;
+    document.getElementById('statNextTime').innerText = `${hr>0?hr+'ชม ':''}${mn}น.`;
+  } else { container.innerHTML = ``; document.getElementById('statNextTime').innerText = "--"; }
+}
+
+function renderDashboard() {
+  document.getElementById('dashName').innerText = appData.profile.name; updateAvatarUI();
+  const items = getTodayItems();
+  document.getElementById('statTodayClass').innerText = items.filter(i=>i.type==='class').length;
+  document.getElementById('statTodayAct').innerText = items.filter(i=>i.type==='act').length;
+
+  const list = document.getElementById('todayList');
+  list.innerHTML = items.length === 0 ? '<div style="text-align:center; color:var(--text-muted); padding:30px; background:var(--surface-solid); border-radius:var(--radius-md); border:1px dashed var(--border);">ไม่มีตารางสำหรับวันนี้<br>พักผ่อนได้เต็มที่ 🎉</div>' : '';
+
+  const curMins = BASE_DATE.getHours()*60 + BASE_DATE.getMinutes();
+  items.forEach(item => {
+    let status = '';
+    if (item.isAllDay) status = '<span class="item-status status-now" style="background:var(--primary); color:white;">ตลอดวัน</span>';
+    else {
+      const s = timeToMins(item.start || item.time);
+      const e = item.type==='class' ? timeToMins(item.end) : timeToMins(item.endTime || '23:59');
+      status = curMins > e ? '<span class="item-status status-past">ผ่านมาแล้ว</span>' : curMins >= s ? '<span class="item-status status-now">กำลังดำเนินอยู่</span>' : '<span class="item-status status-next">กำลังจะเริ่ม</span>';
+    }
+    list.innerHTML += createItemHTML(item, status);
+  });
+}
+
+function createItemHTML(item, extra='') {
+  let timeStr = item.isAllDay ? `<div class="item-time-main">ตลอดวัน</div>` : `<div class="item-time-main">${item.start || item.time}</div>${item.end || item.endTime ? `<div class="item-time-sub">${item.end || item.endTime}</div>` : ''}`;
+  let extraIcon = item.recurrence && item.recurrence !== 'none' ? `<svg width="14" height="14" style="margin-left:6px; color:var(--primary);"><use href="#icon-repeat"></use></svg>` : '';
+
+  return `
+    <div class="card list-item" draggable="true">
+      <div class="item-color-bar" style="background:${item.color}"></div>
+      <div class="item-time-col">${timeStr}</div>
+      <div class="item-content">
+        <div class="item-title">${item.title} ${extraIcon}</div>
+        <div class="item-meta">
+          <svg width="14" height="14"><use href="${item.type==='class'?'#icon-user':'#icon-map'}"></use></svg>
+          <span>${item.room || item.loc || (item.type==='class'?'วิชาเรียน':'กิจกรรม')}</span>
+          ${extra}
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="icon-btn" onclick="editItem('${item.id}', '${item.type}')"><svg width="18" height="18"><use href="#icon-edit"></use></svg></button>
+        <button class="icon-btn" onclick="confirmDelete('${item.id}', '${item.type}')" style="color:var(--danger); background:rgba(239, 68, 68, 0.1);"><svg width="18" height="18"><use href="#icon-trash"></use></svg></button>
+      </div>
+    </div>`;
+}
+
+// Search and Filters
+let filterMode = 'all', searchQuery = '';
+document.querySelectorAll('.filter-chips .chip').forEach(c => {
+  c.addEventListener('click', (e) => {
+    document.querySelectorAll('.filter-chips .chip').forEach(x=>x.classList.remove('active'));
+    e.target.classList.add('active'); filterMode = e.target.dataset.filter; renderList();
+  });
+});
+document.getElementById('searchInput').addEventListener('input', (e) => { searchQuery = e.target.value.toLowerCase(); renderList(); });
+
+function renderList() {
+  const list = document.getElementById('fullList'); list.innerHTML = '';
+  let items = [...appData.classes, ...appData.activities];
+  if(filterMode !== 'all') items = items.filter(i => i.type === (filterMode==='class'?'class':'act'));
+  if(searchQuery) items = items.filter(i => (i.title.toLowerCase().includes(searchQuery) || (i.teacher||'').toLowerCase().includes(searchQuery) || (i.room||i.loc||'').toLowerCase().includes(searchQuery)));
+  items.sort((a,b) => new Date(a.date) - new Date(b.date) || timeToMins(a.start||a.time) - timeToMins(b.start||b.time));
+  if(items.length===0) list.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px;">ไม่พบข้อมูลรายการ</div>';
+  items.forEach(item => list.innerHTML += createItemHTML(item));
+}
+
+function renderDailyTimeline() {
+  const container = document.getElementById('dailyTimeline'); container.innerHTML = '';
+  for(let i=0; i<24; i++) container.innerHTML += `<div class="time-slot"><span class="time-label">${pad(i)}:00</span></div>`;
+  getTodayItems().forEach(item => {
+    if(item.isAllDay) {
+       container.innerHTML += `<div class="timeline-event" style="top:5px; height:36px; background:${item.color}; left:65px; z-index:10; border:1px solid rgba(255,255,255,0.3);">[ตลอดวัน] ${item.title}</div>`;
+       return;
+    }
+    const s = timeToMins(item.start||item.time);
+    const duration = item.type==='class' ? timeToMins(item.end)-s : timeToMins(item.endTime || '23:59') - s;
+    const top = (s/60) * 60, height = Math.max((duration/60) * 60, 20); // Min height 20px
+    container.innerHTML += `<div class="timeline-event" style="top:${top}px; height:${height}px; background:${item.color}; left:65px;">${item.title}</div>`;
+  });
+}
+
+function renderWeeklyGrid() {
+  const container = document.getElementById('weeklyGrid'); let html = '<div class="wg-header">เวลา</div>';
+  for(let d of ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"]) html += `<div class="wg-header">${d}</div>`;
+  for(let h=6; h<=20; h++) { html += `<div class="wg-cell"><div class="wg-time">${pad(h)}:00</div></div>`; for(let d=0; d<7; d++) html += `<div class="wg-cell" id="wg-${d}-${h}"></div>`; }
+  container.innerHTML = html;
+
+  const weekAnchor = new Date(BASE_DATE);
+  for (let dow = 0; dow < 7; dow++) {
+    const cellDate = new Date(weekAnchor); cellDate.setDate(weekAnchor.getDate() - weekAnchor.getDay() + dow);
+    appData.classes.forEach(c => {
+      if (!isActivityOnDate(c, cellDate)) return;
+      const sHr = Math.floor(timeToMins(c.start)/60);
+      if(sHr>=6 && sHr<=20) {
+        const cell = document.getElementById(`wg-${dow}-${sHr}`);
+        if(cell) cell.innerHTML += `<div class="wg-event" style="background:${c.color}; top:2px; height:46px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">${c.title}</div>`;
+      }
+    });
+  }
+}
+
+function renderCalendar() {
+  const grid = document.getElementById('monthGrid'); grid.innerHTML = '';
+  const d = BASE_DATE, year = d.getFullYear(), month = d.getMonth();
+  document.getElementById('calMonthDisplay').innerText = `${monthsTh[month]} ${year+543}`;
+  const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month+1, 0).getDate();
+  for(let i=0; i<firstDay; i++) grid.innerHTML += `<div></div>`;
+
+  const allItems = [...appData.classes, ...appData.activities];
+  for(let i=1; i<=daysInMonth; i++) {
+    const curDateObj = new Date(year, month, i);
+    const curDateStr = `${year}-${pad(month+1)}-${pad(i)}`;
+    let dots = '';
+
+    // Limit dots to 4 to prevent UI overflow
+    let todaysItems = allItems.filter(item => isActivityOnDate(item, curDateObj));
+    todaysItems.slice(0, 4).forEach(x => dots+=`<div class="cal-dot" style="background:${x.color}"></div>`);
+    if(todaysItems.length > 4) dots += `<div class="cal-dot" style="background:var(--text-muted); width:4px; height:4px; margin-top:1px;"></div>`;
+
+    const isToday = (i===d.getDate() && month===d.getMonth() && year===d.getFullYear()) ? 'today' : '';
+    grid.innerHTML += `<div class="cal-cell ${isToday}" onclick="selectDate('${curDateStr}', ${curDateObj.getTime()})"><div class="cal-date">${i}</div><div class="cal-dots">${dots}</div></div>`;
+  }
+}
+
+function selectDate(dateStr, timeMs) {
+  const targetDateObj = new Date(timeMs);
+  const thStr = `วัน${daysTh[targetDateObj.getDay()]}ที่ ${targetDateObj.getDate()} ${monthsTh[targetDateObj.getMonth()]}`;
+  document.getElementById('selectedDateDisplay').innerText = thStr;
+  const list = document.getElementById('selectedDateList');
+
+  const allItems = [...appData.classes, ...appData.activities];
+  const items = allItems.filter(item => isActivityOnDate(item, targetDateObj)).sort((a,b) => {
+    if (a.isAllDay && !b.isAllDay) return -1; if (!a.isAllDay && b.isAllDay) return 1;
+    return timeToMins(a.start||a.time) - timeToMins(b.start||b.time);
+  });
+
+  list.innerHTML = items.length===0 ? '<div style="text-align:center; padding:20px; color:var(--text-muted); background:var(--surface-solid); border-radius:var(--radius-md);">ว่าง ไม่มีรายการสำหรับวันนี้</div>' : '';
+  items.forEach(i => list.innerHTML += createItemHTML(i));
+}
+
+function renderStats() { document.getElementById('statTotalClass').innerText = appData.classes.length; document.getElementById('statTotalAct').innerText = appData.activities.length; }
+
+function drawPieChart() {
+  const canvas = document.getElementById('pieChart'); const ctx = canvas.getContext('2d'); canvas.width = 300; canvas.height = 220; ctx.clearRect(0,0,300,220);
+  if(appData.classes.length === 0) { ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-muted'); ctx.font = "14px 'Bai Jamjuree'"; ctx.fillText("ไม่มีข้อมูลวิชาเรียน", 100, 110); return; }
+  let totalMins = 0; const classTimes = {};
+  appData.classes.forEach(c => { const m = timeToMins(c.end) - timeToMins(c.start); totalMins += m; classTimes[c.title] = (classTimes[c.title]||0) + m; });
+  let startAngle = 0, legendY = 20;
+  Object.entries(classTimes).forEach(([title, mins]) => {
+    const sliceAngle = (mins/totalMins) * 2 * Math.PI; ctx.fillStyle = appData.classes.find(c=>c.title===title).color; ctx.beginPath(); ctx.moveTo(90, 110); ctx.arc(90, 110, 80, startAngle, startAngle+sliceAngle); ctx.fill(); startAngle += sliceAngle;
+    ctx.fillRect(190, legendY, 14, 14); ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-main'); ctx.font = "13px 'Bai Jamjuree'"; ctx.fillText(title.substring(0,10)+(title.length>10?'..':''), 215, legendY+12); legendY += 28;
+  });
+}
+
+/* ================= 9. FORMS & CRUD LOGIC ================= */
+function genId() { return Math.random().toString(36).substr(2, 9); }
+
+function toggleAllDayClass() {
+  const isAllDay = document.getElementById('c_allday').checked;
+  const timeWrap1 = document.getElementById('c_time_wrap'), timeWrap2 = document.getElementById('c_endtime_wrap');
+  const t1 = document.getElementById('c_start'), t2 = document.getElementById('c_end');
+  timeWrap1.style.opacity = isAllDay ? '0.4' : '1'; timeWrap2.style.opacity = isAllDay ? '0.4' : '1';
+  t1.disabled = isAllDay; t2.disabled = isAllDay;
+  if(isAllDay) { t1.value = '00:00'; t2.value = '23:59'; }
+}
+
+function toggleAllDay() {
+  const isAllDay = document.getElementById('a_allday').checked;
+  const timeWrap1 = document.getElementById('a_time_wrap'), timeWrap2 = document.getElementById('a_endtime_wrap');
+  const t1 = document.getElementById('a_time'), t2 = document.getElementById('a_end_time');
+  timeWrap1.style.opacity = isAllDay ? '0.4' : '1'; timeWrap2.style.opacity = isAllDay ? '0.4' : '1';
+  t1.disabled = isAllDay; t2.disabled = isAllDay;
+  if(isAllDay) { t1.value = '00:00'; t2.value = '23:59'; }
+}
+
+function saveClass() {
+  const id = document.getElementById('c_id').value;
+  const isAllDay = document.getElementById('c_allday').checked;
+
+  const item = {
+    id: id || genId(), type: 'class',
+    title: document.getElementById('c_title').value,
+    teacher: document.getElementById('c_teacher').value,
+    room: document.getElementById('c_room').value,
+    date: document.getElementById('c_date').value,
+    endDate: document.getElementById('c_end_date').value,
+    start: isAllDay ? '00:00' : document.getElementById('c_start').value,
+    end: isAllDay ? '23:59' : document.getElementById('c_end').value,
+    isAllDay: isAllDay,
+    recurrence: document.getElementById('c_recurrence').value,
+    color: selectedClassColor,
+    repeatUntil: document.getElementById('c_repeat_until').value || '2100-01-01'
+  };
+
+  if(!item.title || !item.date || !item.endDate) return alert("กรุณากรอกข้อมูล วันเริ่มต้นและสิ้นสุด ให้ครบถ้วน");
+  if(new Date(item.endDate) < new Date(item.date)) return alert("วันที่สิ้นสุด ต้องไม่ก่อนวันที่เริ่มต้น");
+
+  if(id) appData.classes = appData.classes.map(c => c.id===id ? item : c); else appData.classes.push(item);
+  saveData(); closeAllSheets(); showToast(id ? "แก้ไขสำเร็จ" : "บันทึกเรียบร้อย"); clearForms();
+}
+
+function saveActivity() {
+  const id = document.getElementById('a_id').value;
+  const isAllDay = document.getElementById('a_allday').checked;
+  const item = {
+    id: id || genId(), type: 'act', title: document.getElementById('a_title').value,
+    date: document.getElementById('a_date').value, endDate: document.getElementById('a_end_date').value,
+    time: isAllDay ? '00:00' : document.getElementById('a_time').value, endTime: isAllDay ? '23:59' : document.getElementById('a_end_time').value,
+    isAllDay: isAllDay, recurrence: document.getElementById('a_recurrence').value,
+    loc: document.getElementById('a_loc').value, notify: parseInt(document.getElementById('a_notify').value), color: "#06B6D4",
+    repeatUntil: document.getElementById('a_repeat_until').value || '2100-01-01'
+  };
+
+  if(!item.title || !item.date || !item.endDate) return alert("กรุณากรอกข้อมูล วันเริ่มต้นและสิ้นสุด ให้ครบถ้วน");
+  if(new Date(item.endDate) < new Date(item.date)) return alert("วันที่สิ้นสุด ต้องไม่ก่อนวันที่เริ่มต้น");
+
+  if(id) appData.activities = appData.activities.map(a => a.id===id ? item : a); else appData.activities.push(item);
+  saveData(); closeAllSheets(); showToast(id ? "แก้ไขสำเร็จ" : "บันทึกเรียบร้อย"); clearForms();
+}
+
+function clearForms() {
+  // Clear Class Form
+  document.getElementById('c_id').value = ''; document.getElementById('c_title').value = '';
+  document.getElementById('c_teacher').value=''; document.getElementById('c_room').value='';
+  document.getElementById('c_date').value = getTodayStr(); document.getElementById('c_end_date').value = getTodayStr();
+  document.getElementById('c_allday').checked = false; document.getElementById('c_recurrence').value = 'none';
+  document.getElementById('c_repeat_until').value = '';
+  toggleAllDayClass();
+
+  // Clear Activity Form
+  document.getElementById('a_id').value = ''; document.getElementById('a_title').value = '';
+  document.getElementById('a_date').value = getTodayStr(); document.getElementById('a_end_date').value = getTodayStr();
+  document.getElementById('a_allday').checked = false; document.getElementById('a_recurrence').value = 'none';
+  document.getElementById('a_repeat_until').value = ''; document.getElementById('a_loc').value = '';
+  toggleAllDay();
+}
+
+function editItem(id, type) {
+  closeAllSheets();
+  if(type === 'class') {
+    const c = appData.classes.find(x=>x.id===id);
+    document.getElementById('c_id').value = c.id; document.getElementById('c_title').value = c.title; document.getElementById('c_teacher').value = c.teacher; document.getElementById('c_room').value = c.room;
+    document.getElementById('c_date').value = c.date; document.getElementById('c_end_date').value = c.endDate || c.date;
+    document.getElementById('c_allday').checked = !!c.isAllDay; toggleAllDayClass();
+    document.getElementById('c_start').value = c.start; document.getElementById('c_end').value = c.end;
+    document.getElementById('c_recurrence').value = c.recurrence || 'none'; document.getElementById('c_repeat_until').value = (c.repeatUntil && c.repeatUntil !== '2100-01-01') ? c.repeatUntil : '';
+    document.getElementById('repeat_until_wrap').style.display = (c.recurrence && c.recurrence !== 'none') ? 'block' : 'none';
+    selectedClassColor = c.color;
+    document.querySelectorAll('#c_color_picker .color-circle').forEach(el => el.classList.toggle('active', el.dataset.color === c.color));
+    document.getElementById('classFormTitle').innerText = "แก้ไขคาบเรียน"; openSheet('classFormSheet');
+  } else {
+    const a = appData.activities.find(x=>x.id===id);
+    document.getElementById('a_id').value = a.id; document.getElementById('a_title').value = a.title; document.getElementById('a_date').value = a.date; document.getElementById('a_end_date').value = a.endDate || a.date; document.getElementById('a_time').value = a.time; document.getElementById('a_end_time').value = a.endTime || '23:59';
+    document.getElementById('a_allday').checked = !!a.isAllDay; toggleAllDay();
+    document.getElementById('a_recurrence').value = a.recurrence || 'none'; document.getElementById('a_repeat_until').value = (a.repeatUntil && a.repeatUntil !== '2100-01-01') ? a.repeatUntil : '';
+    document.getElementById('repeat_until_wrap2').style.display = (a.recurrence && a.recurrence !== 'none') ? 'block' : 'none';
+    document.getElementById('a_loc').value = a.loc; document.getElementById('a_notify').value = a.notify;
+    document.getElementById('actFormTitle').innerText = "แก้ไขกิจกรรม"; openSheet('actFormSheet');
+  }
+}
+
+let deleteTarget = {id:null, type:null};
+function confirmDelete(id, type) { deleteTarget = {id, type}; openSheet('confirmSheet'); }
+document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+  if(deleteTarget.type==='class') appData.classes = appData.classes.filter(c=>c.id!==deleteTarget.id); else appData.activities = appData.activities.filter(a=>a.id!==deleteTarget.id);
+  saveData(); closeAllSheets(); showToast("ลบข้อมูลเรียบร้อย");
+});
+
+/* ================= 10. SETTINGS & EXPORT ================= */
+function initSettings() {
+  document.getElementById('setProfileName').value = appData.profile.name; document.getElementById('setDarkMode').checked = appData.profile.theme === 'dark'; document.getElementById('setAnim').checked = appData.profile.anim;
+  applyTheme(appData.profile.theme); document.documentElement.setAttribute('data-anim', appData.profile.anim ? 'on' : 'off'); updateAvatarUI();
+  if (currentUser) document.getElementById('syncUsername').innerText = currentUser.username;
+  document.getElementById('setDarkMode').onchange = (e) => { appData.profile.theme = e.target.checked ? 'dark' : 'light'; applyTheme(appData.profile.theme); saveData(); };
+  document.getElementById('setAnim').onchange = (e) => { appData.profile.anim = e.target.checked; document.documentElement.setAttribute('data-anim', e.target.checked ? 'on' : 'off'); saveData(); };
+}
+function saveProfile() { appData.profile.name = document.getElementById('setProfileName').value; saveData(); showToast("บันทึกโปรไฟล์เรียบร้อย"); }
+function applyTheme(theme) { document.documentElement.setAttribute('data-theme', theme); }
+
+function exportData() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData)); const dlAnchorElem = document.createElement('a'); dlAnchorElem.setAttribute("href", dataStr); dlAnchorElem.setAttribute("download", "myschedule_backup.json"); dlAnchorElem.click(); }
+function importData(e) { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const parsed = JSON.parse(e.target.result); if(parsed.classes && parsed.activities) { appData = parsed; saveData(); showToast("กู้คืนข้อมูลสำเร็จ"); } } catch(err) { alert("ไฟล์ไม่ถูกต้อง"); } }; reader.readAsText(file); }
+
+/* ================= 11. NOTIFICATIONS ================= */
+let notified = {};
+function checkNotifications() {
+  if (typeof Notification !== 'undefined' && Notification.permission !== "granted" && Notification.permission !== "denied") Notification.requestPermission();
+  const curMins = BASE_DATE.getHours()*60 + BASE_DATE.getMinutes();
+
+  getTodayItems().filter(i=>i.type==='act' && !i.isAllDay && i.notify > 0).forEach(a => {
+    const targetMins = timeToMins(a.time) - a.notify;
+    if(curMins === targetMins && !notified[a.id+getTodayStr()]) {
+      if(typeof Notification !== 'undefined' && Notification.permission === "granted") new Notification("My Schedule", { body: `กิจกรรม "${a.title}" จะเริ่มในอีก ${a.notify} นาที` });
+      showToast(`แจ้งเตือน: ${a.title} เริ่มใน ${a.notify} นาที`); notified[a.id+getTodayStr()] = true;
+    }
+  });
+}
+
+/* ================= 12. PWA SERVICE WORKER ================= */
+if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
+  const swCode = `self.addEventListener('install', e => e.waitUntil(self.skipWaiting())); self.addEventListener('activate', e => e.waitUntil(self.clients.claim())); self.addEventListener('fetch', e => { e.respondWith(caches.match(e.request).then(res => res || fetch(e.request))); });`;
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode], {type: 'application/javascript'}))).catch(console.error);
+}
+
+function setupRepeatListeners() {
+  const map = { c_recurrence: 'repeat_until_wrap', a_recurrence: 'repeat_until_wrap2' };
+  Object.keys(map).forEach(id => {
+    document.getElementById(id).addEventListener('change', (e) => {
+      document.getElementById(map[id]).style.display = (e.target.value !== 'none') ? 'block' : 'none';
+    });
+  });
+}
+
+// ================= System Init =================
+setupRepeatListeners();
+attemptAutoLogin();
+</script>
+</body>
+</html>
