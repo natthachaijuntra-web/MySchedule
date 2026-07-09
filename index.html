@@ -1084,10 +1084,11 @@ function updateCurrentActivity() {
     else if(curMins < s && !next) next = item;
   }
 
-if(current) {
+  if(current) {
     const e = current.type === 'class' ? timeToMins(current.end) : timeToMins(current.endTime || '23:59');
     const remain = e - curMins;
-  
+    
+    // แทรกไอคอน icon-user
     const teacherHtml = current.type === 'class' && current.teacher ? `<div style="font-size: 0.95rem; opacity: 0.9; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;"><svg width="16" height="16"><use href="#icon-user"></use></svg> ${current.teacher}</div>` : '';
     
     container.innerHTML = `<div class="card current-activity floating-card"><span class="ca-badge">กำลัง${current.type==='class'?'เรียน':'ทำกิจกรรม'}</span><div class="ca-title">${current.title}</div>${teacherHtml}<div class="ca-time">${current.start || current.time} - ${current.end || current.endTime || '...'}</div><div class="ca-remain">เหลืออีก ${remain} นาที</div></div>`;
@@ -1098,7 +1099,6 @@ if(current) {
     document.getElementById('statNextTime').innerText = `${hr>0?hr+'ชม ':''}${mn}น.`;
   } else { container.innerHTML = ``; document.getElementById('statNextTime').innerText = "--"; }
 }
-
 function renderDashboard() {
   document.getElementById('dashName').innerText = appData.profile.name; updateAvatarUI();
   const items = getTodayItems();
@@ -1125,7 +1125,7 @@ function createItemHTML(item, extra='') {
   let timeStr = item.isAllDay ? `<div class="item-time-main">ตลอดวัน</div>` : `<div class="item-time-main">${item.start || item.time}</div>${item.end || item.endTime ? `<div class="item-time-sub">${item.end || item.endTime}</div>` : ''}`;
   let extraIcon = item.recurrence && item.recurrence !== 'none' ? `<svg width="14" height="14" style="margin-left:6px; color:var(--primary);"><use href="#icon-repeat"></use></svg>` : '';
   
-  // เปลี่ยนจากอีโมจิเป็นแท็ก SVG icon-user พร้อมจัดรูปแบบให้เรียงสวยงาม
+  // แทรกไอคอน icon-user
   let teacherStr = item.type === 'class' && item.teacher ? `<span style="margin-left:4px; display: inline-flex; align-items: center; gap: 4px;">• <svg width="14" height="14"><use href="#icon-user"></use></svg> ${item.teacher}</span>` : '';
 
   return `
@@ -1147,7 +1147,6 @@ function createItemHTML(item, extra='') {
       </div>
     </div>`;
 }
-
 // Search and Filters
 let filterMode = 'all', searchQuery = '';
 document.querySelectorAll('.filter-chips .chip').forEach(c => {
