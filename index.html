@@ -1122,7 +1122,7 @@ function renderDashboard() {
 function createItemHTML(item, extra='') {
   let timeStr = item.isAllDay ? `<div class="item-time-main">ตลอดวัน</div>` : `<div class="item-time-main">${item.start || item.time}</div>${item.end || item.endTime ? `<div class="item-time-sub">${item.end || item.endTime}</div>` : ''}`;
   let extraIcon = item.recurrence && item.recurrence !== 'none' ? `<svg width="14" height="14" style="margin-left:6px; color:var(--primary);"><use href="#icon-repeat"></use></svg>` : '';
-  let teacherStr = item.type === 'class' && item.teacher ? `<svg width="14" height="14"><use href="#icon-user"}"></use></svg><span style="margin-left:4px;"> ${item.teacher}</span>` : '';
+  let teacherStr = item.type === 'class' && item.teacher ? `<svg width="14" height="14"><use href="#icon-user"}"></use></svg>  ${item.teacher}</span>` : '';
 
   return `
     <div class="card list-item" draggable="true">
@@ -1131,7 +1131,7 @@ function createItemHTML(item, extra='') {
       <div class="item-content">
         <div class="item-title">${item.title} ${extraIcon}</div>
         <div class="item-meta">
-          <svg width="14" height="14"><use href="${item.type==='class'?'#icon-map':'#icon-map'}"></use></svg>
+          <svg width="14" height="14"><use href="${item.type==='class'?'#icon-user':'#icon-map'}"></use></svg>
           <span>${item.room || item.loc || (item.type==='class'?'วิชาเรียน':'กิจกรรม')}</span>
           ${teacherStr}
           ${extra}
