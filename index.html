@@ -1131,7 +1131,7 @@ function createItemHTML(item, extra='') {
       <div class="item-content">
         <div class="item-title">${item.title} ${extraIcon}</div>
         <div class="item-meta">
-          <svg width="14" height="14"><use href="${item.type==='class'?'#icon-user':'#icon-map'}"></use></svg>
+          <svg width="14" height="14"><use href="${item.type==='class'?'#icon-map':'#icon-map'}"></use></svg>
           <span>${item.room || item.loc || (item.type==='class'?'วิชาเรียน':'กิจกรรม')}</span>
           ${teacherStr}
           ${extra}
